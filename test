@@ -200,6 +200,7 @@ spec:
 
 ##Creating
 kubectl create -f q5dep1.yaml --namespace=alchemist
+{Capture.png}
 
 
 #Task-6
