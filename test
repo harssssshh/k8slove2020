@@ -65,7 +65,7 @@ spec:
  
  ##Creating File
  
- kubectl create -f q2.yaml
+ kubectl create -f q2.yaml --namespace=alchemist
  
  
  # Task-3
@@ -102,7 +102,7 @@ spec:
     targetPort: 80
  type: NodePort
 
-kubectl create -f  q3.yaml
+kubectl create -f  q3.yaml --namespace=alchemist
 
 
 #Task-4
@@ -150,7 +150,7 @@ spec:
 
 
 ## Creating 
-kubectl create -f q4rs.yaml
+kubectl create -f q4rs.yaml --namespace=alchemist
 
 
 #Task-5
@@ -199,7 +199,7 @@ spec:
     targetPort: 80
 
 ##Creating
-kubectl create -f q5dep1.yaml 
+kubectl create -f q5dep1.yaml --namespace=alchemist
 
 
 #Task-6
@@ -234,7 +234,7 @@ spec:
     targetPort: 9000
 
 ##Creating 
-kubectl create -f portainer.yaml
+kubectl create -f portainer.yaml --namespace=alchemist
 
 #Task8
 
@@ -274,6 +274,7 @@ spec:
 ### Changing Without Re-Creating
 
 kubectl edit pod pod1
+{Reanem ngix to nginx}
 
 
 #Task9
@@ -295,5 +296,5 @@ spec:
 
 
 #Creating
-kubectl create -f q9.yaml
+kubectl create -f q9.yaml --namespace=alchemist
 kubectl expose pod jenkinspod1 --type=NodePort --port=8080
