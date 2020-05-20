@@ -1,0 +1,299 @@
+Task-1
+
+git clone https://github.com/mdn/beginner-html-site-styled.git
+git clone https://github.com/microsoft/project-html-website.git
+
+### DockerFile ###
+FROM httpd
+MAINTAINER hvkataria12@gmail.com
+ENV x=app
+EXPOSE 80
+COPY beginner-html-site-styled /opt/beginner
+COPY project-html-website /opt/project
+COPY start.sh /opt/start.sh
+WORKDIR /opt
+RUN chmod u+x start.sh
+ENTRYPOINT ["/bin/bash", "/opt/start.sh"]
+
+docker build -f adhochttpd.dockerfile .
+
+## start.sh ###
+
+#!/bin/bash
+
+if [ $x == "app1" ]
+then
+    cp -r /opt/beginner/* /usr/local/apache2/htdocs/
+    httpd -DFOREGROUND
+elif [ $x == "app2" ]
+then
+    cp -r /opt/project/* /usr/local/apache2/htdocs/
+    httpd -DFOREGROUND
+else
+    httpd -DFOREGROUND
+fi
+
+
+### Task-2 
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: adhocpod1
+ namespace: alchemist
+ labels:
+  adhoc: harshvardhanq2
+spec:
+ containers:
+  - name: harshvardhancont
+    image: nginx
+    ports:
+     - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: q2svcharshvardhan
+spec:
+ selector:
+  adhoc: harshvardhanq2
+ ports:
+  - port: 80
+    targetPort: 80
+ type: NodePort
+ 
+ ##Creating File
+ 
+ kubectl create -f q2.yaml
+ 
+ 
+ # Task-3
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: adhocpod2
+ namespace: alchemist
+ labels:
+  adhoc: harshvardhanq3
+spec:
+ nodeName: ip-172-31-36-77.ec2.internal
+ containers:
+  - name: httpdcontainer
+    image: harssssshh/may2020q1:v1
+    env:
+     - name: x
+       value: app2
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: q3svcharshvardhan
+apiVersion: v1
+kind: Service
+spec:
+ selector:
+  adhoc: harshvardhanq3
+ ports:
+  - port: 80
+    nodePort: 30112
+    targetPort: 80
+ type: NodePort
+
+kubectl create -f  q3.yaml
+
+
+#Task-4
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+ name: adhocrsharshvardhan4
+ labels:
+  run: httpdapp
+ namespace: alchemist
+spec:
+ replicas: 5
+ selector:
+  matchLabels:
+   adhoc: harshvardhanq4
+ template:
+  metadata:
+   name: adhocpod4
+   labels:
+    adhoc: harshvardhanq4
+  spec:
+   containers:
+    - name: httpdcont4
+      image: harssssshh/may2020q1:v1
+      env:
+       - name: x
+         value: app2
+      ports:
+       - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: q4svcharshvardhan
+ labels:
+  run: httpdapp
+spec:
+ type: LoadBalancer
+ selector:
+  adhoc: harshvardhanq4
+ ports:
+  - port: 80
+    targetPort: 80
+
+
+## Creating 
+kubectl create -f q4rs.yaml
+
+
+#Task-5
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adhocdepharshvardhan5
+  labels:
+    adhoc: harshvardhanq5
+  namespace: alchemist
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      adhoc: harshvardhanq5
+  template:
+    metadata:
+      name: nginxtemp
+      labels:
+        adhoc: harshvardhanq5
+    spec:
+       containers:
+        - name: nginxcont5
+          image: harssssshh/may2020q1:v1
+          env:
+           - name: x
+             value: app1
+          ports:
+          - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+ name: q5svcharshvardhan
+ labels:
+  adhoc: q5svcharshvardhan
+spec:
+ type: LoadBalancer
+ selector:
+  adhoc: harshvardhanq5
+ ports:
+  - port: 80
+    targetPort: 80
+
+##Creating
+kubectl create -f q5dep1.yaml 
+
+
+#Task-6
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: adhocpod6
+ labels:
+  adhoc: harshvardhanq6
+spec:
+ nodeName: ip-172-31-34-138.ec2.internal
+ containers:
+  - name: portainercont
+    image: portainer/portainer
+    ports:
+     - containerPort: 9000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: q6svcharshvardhan
+ labels:
+  adhoc: q6svcharshvardhan
+spec:
+ type: NodePort
+ selector:
+  adhoc: harshvardhanq6
+ ports:
+  - port: 9000
+    targetPort: 9000
+
+##Creating 
+kubectl create -f portainer.yaml
+
+#Task8
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:   #  is important if you want your application can get the traffic from service 
+   x: hello  # label always be in key: value pair and it must be unique 
+  name: podexam  # must be unique
+spec:
+  containers:
+  - image: ngix
+    name: pod1
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: wowo2020harshvardhan
+ labels:
+  x: hello
+spec:
+ type: NodePort
+ selector:
+  x: hello
+ ports:
+  - port: 80
+    targetPort:80
+
+### Changing Without Re-Creating
+
+kubectl edit pod pod1
+
+
+#Task9
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: jenkinspod1
+ labels:
+  adhoc: harshvardhanq9
+ namespace: alchemist
+spec:
+ nodeName: ip-172-31-34-138.ec2.internal
+ containers:
+  - name: jenkins
+    image: jenkins/jenkins
+    ports:
+     - containerPort: 8080
+
+
+#Creating
+kubectl create -f q9.yaml
+kubectl expose pod jenkinspod1 --type=NodePort --port=8080
