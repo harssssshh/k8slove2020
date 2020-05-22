@@ -1,0 +1,22 @@
+### Run 10 Alpine Pods With ping 8.8.8.8 as a Parent Process
+
+mkdir task1 ; cd task1;
+
+#Creating A Bash Script To Run Pods named adhoc
+
+nano start.sh
+
+### Open File ###
+#!/bin/sh
+for i in `seq  10`
+do
+  echo "Running Pods"
+  kubectl run adhoc${i}  --image=alpine  -- ping 8.8.8.8
+done
+
+### Save File ###
+
+chmod +x start.sh
+
+##  Run The Script ##
+./start.sh
