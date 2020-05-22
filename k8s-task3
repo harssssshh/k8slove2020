@@ -1,0 +1,143 @@
+#Task 2 
+# List Pods Running On Cluster Within The Pod And Mail Details To learntechbyme@gmail.com
+
+#Creating Folder
+mkdir assignment3 ; cd assignment3
+
+### Creating Startup Script For Docker Container ###
+nano getpods.sh
+
+### Open File ###
+
+python3 listpods.py > pods.txt
+python3 sendmail.py
+
+### Saving File ###
+
+### Python Script To List Pods ###
+nano listpods.py
+
+### Open File ###
+
+from kubernetes import client, config
+
+config.load_incluster_config()
+v1 = client.CoreV1Api()
+print("Listing pods with their IPs:")
+ret = v1.list_namespaced_pod(namespace='default', watch=False)
+for i in ret.items:
+ print("%s\t%s\t%s" %
+  (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+
+### Save File ###
+
+### Python Script To Send Mail ###
+
+nano sendmail.py
+
+### Open File ### 
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+with open ("pods.txt", "r") as myfile:
+ mail_content=myfile.read()
+#The mail addresses and password
+sender_address = 'me@gmail.com'
+sender_pass = 'password'
+receiver_address = 'receiver@gmail.com'
+#Setup the MIME
+message = MIMEMultipart()
+message['From'] = sender_address
+message['To'] = receiver_address
+message['Subject'] = 'Harsh Vardhan k8slove2020'  
+#The body and the attachments for the mail
+message.attach(MIMEText(mail_content, 'plain'))
+#Create SMTP session for sending the mail
+session = smtplib.SMTP('smtp.gmail.com', 587) 
+session.starttls() #enable security
+session.login(sender_address, sender_pass)
+text = message.as_string()
+session.sendmail(sender_address, receiver_address, text)
+session.quit()
+print('Mail Sent')
+
+### Save File ###
+
+nano Dockerfile
+
+### Open File ###
+
+FROM nginx 
+RUN apt-get update
+RUN apt install python3 python3-pip -y
+RUN pip3 install kubernetes
+COPY sendmail.py /opt/sendmail.py
+COPY getpods.sh /opt/getpods.sh
+COPY listpods.py /opt/listpods.py
+WORKDIR /opt
+RUN chmod +x getpods.sh 
+ENTRYPOINT /opt/getpods.sh
+
+### Saving File ###
+
+# Building Image 
+docker build -t harssssshh/mailnginx
+
+#Pushing image
+
+docker login
+docker push harssssshh/mailnginx
+
+#Creating RoleBinding Resource To View Running Pods Using default user & default namespace
+nano rolebind.yaml
+
+### Open File ###
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: view-pods
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+
+### Save File ###
+
+# Creating Role Binding Service From yaml
+
+kubectl create -f role.yaml
+
+#Creating Pod From Dockerfile
+
+nano pod.yaml
+
+### Open File ###
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: mailnginx
+ labels:
+  app: nginx
+spec:
+ serviceAccountName: default
+ containers:
+  - name: mailnginxcont
+    image: harssssshh/mailnginx
+    ports:
+     - containerPort: 80
+ restartPolicy: Never
+
+### Save File ###
+
+#Creating pod from yaml
+
+kubectl create -f pod.yaml
+
